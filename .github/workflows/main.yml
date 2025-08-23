@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest  # or windows-2025 when that becomes the new default
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v4
@@ -15,16 +15,21 @@ jobs:
     - name: Install 32-bit Python 2.7 manually
       shell: powershell
       run: |
-        $msi = "python-2.7.18.msi"  # 32-bit installer
+        $msi = "python-2.7.18.msi"
         Invoke-WebRequest -Uri "https://www.python.org/ftp/python/2.7.18/$msi" -OutFile $msi
         Start-Process msiexec.exe -ArgumentList "/i $msi /qn /norestart TARGETDIR=C:\Python27" -Wait
         echo "C:\Python27;C:\Python27\Scripts" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-    - name: Install dependencies (Pygame 1.9.2 and py2exe)
+    - name: Install py2exe 0.6.9
+      shell: powershell
+      run: |
+        Start-Process -FilePath "py2exe-0.6.9.win32-py2.7.exe" -ArgumentList "/S /D=C:\Python27" -Wait
+
+    - name: Install dependencies (Pygame 1.9.2)
       run: |
         C:\Python27\python.exe -m ensurepip
         C:\Python27\python.exe -m pip install --upgrade pip setuptools
-        C:\Python27\python.exe -m pip install pygame==1.9.2 py2exe
+        C:\Python27\python.exe -m pip install pygame==1.9.2
 
     - name: Build EXE with py2exe
       run: C:\Python27\python.exe setup-win.py py2exe
