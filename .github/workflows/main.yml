@@ -7,23 +7,25 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2019   # Try windows-2019 for better compatibility
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup Python 2.7
-      uses: actions/setup-python@v5
-      with:
-        python-version: '2.7'
+    - name: Install Python 2.7 manually
+      run: |
+        curl -L -o python2.7.msi https://www.python.org/ftp/python/2.7.18/python-2.7.18.amd64.msi
+        msiexec /i python2.7.msi /qn /norestart TARGETDIR=C:\Python27
+        echo "C:\Python27;C:\Python27\Scripts" >> %GITHUB_PATH%
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip setuptools
-        python -m pip install pygame==1.9.1 py2exe
+        C:\Python27\python.exe -m ensurepip
+        C:\Python27\python.exe -m pip install --upgrade pip setuptools
+        C:\Python27\python.exe -m pip install pygame==1.9.1 py2exe
 
     - name: Build EXE with py2exe
-      run: python setup-win.py py2exe
+      run: C:\Python27\python.exe setup-win.py py2exe
 
     - name: Zip dist folder
       run: powershell Compress-Archive -Path dist\* -DestinationPath lostsky.zip
