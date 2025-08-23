@@ -20,18 +20,19 @@ jobs:
         Start-Process msiexec.exe -ArgumentList "/i $msi /qn /norestart TARGETDIR=C:\Python27" -Wait
         echo "C:\Python27;C:\Python27\Scripts" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-    - name: Install dependencies
+    - name: Install pip, setuptools, wheel
       run: |
         C:\Python27\python.exe -m ensurepip
         C:\Python27\python.exe -m pip install --upgrade pip setuptools wheel
-        # Upgrade to a newer Pygame fork compatible with Python 2.7
-        C:\Python27\python.exe -m pip install pygame_sdl2  # or another pygamer variant
-        # Install PyInstaller
-        C:\Python27\python.exe -m pip install pyinstaller
+
+    - name: Install dependencies (Pygame + PyInstaller)
+      run: |
+        C:\Python27\python.exe -m pip install pygame==1.9.6
+        C:\Python27\python.exe -m pip install pyinstaller==3.6
 
     - name: Build EXE with PyInstaller
       run: |
-        C:\Python27\python.exe -m PyInstaller --onefile --windowed srpg.py
+        C:\Python27\python.exe -m PyInstaller --onefile --windowed setup-win.py
 
     - name: Zip dist folder
       run: powershell Compress-Archive -Path dist\* -DestinationPath lostsky.zip
