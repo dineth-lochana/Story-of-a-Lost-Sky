@@ -22,7 +22,8 @@ jobs:
 
     - name: Install py2exe 0.6.9
       run: |
-        C:\Python27\python.exe -m pip install wheels/py2exe_py2-0.6.9-cp27-none-win32.whl
+        python -m pip install --upgrade pip
+        python -m pip install py2exe_py2==0.6.9
 
     - name: Install dependencies (Pygame 1.9.2)
       run: |
